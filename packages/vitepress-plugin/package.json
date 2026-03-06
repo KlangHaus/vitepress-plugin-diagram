@@ -1,0 +1,33 @@
+{
+  "name": "vitepress-plugin-diagram",
+  "version": "0.1.0",
+  "description": "VitePress plugin for rendering Mermaid diagrams at build time",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "diagram": "workspace:*"
+  },
+  "peerDependencies": {
+    "markdown-it": ">=13.0.0"
+  },
+  "peerDependenciesMeta": {
+    "markdown-it": {
+      "optional": true
+    }
+  },
+  "license": "MIT"
+}

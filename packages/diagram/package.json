@@ -1,0 +1,24 @@
+{
+  "name": "diagram",
+  "version": "0.1.0",
+  "description": "Zero-dependency diagram renderer. Parses Mermaid syntax, lays out with a custom Sugiyama engine, outputs SVG.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT"
+}
