@@ -2,11 +2,12 @@
 
 [![npm version](https://img.shields.io/npm/v/vitepress-plugin-mermaid-diagram)](https://www.npmjs.com/package/vitepress-plugin-mermaid-diagram)
 [![npm downloads](https://img.shields.io/npm/dm/vitepress-plugin-mermaid-diagram)](https://www.npmjs.com/package/vitepress-plugin-mermaid-diagram)
+[![CI](https://github.com/KlangHaus/vitepress-plugin-diagram/actions/workflows/ci.yml/badge.svg)](https://github.com/KlangHaus/vitepress-plugin-diagram/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/vitepress-plugin-mermaid-diagram)](LICENSE)
 
 Build-time Mermaid diagram renderer for VitePress. Write standard Mermaid syntax in fenced code blocks and get static SVG output — no mermaid.js runtime, no browser, no headless Chrome.
 
-[Live Demo](https://klanghaus.github.io/vitepress-plugin-mermaid-diagram/) | [npm](https://www.npmjs.com/package/vitepress-plugin-mermaid-diagram) | [GitHub](https://github.com/KlangHaus/vitepress-plugin-mermaid-diagram)
+[Live Demo](https://klanghaus.github.io/vitepress-plugin-diagram/) | [npm](https://www.npmjs.com/package/vitepress-plugin-mermaid-diagram) | [GitHub](https://github.com/KlangHaus/vitepress-plugin-diagram)
 
 ## Features
 

@@ -41,12 +41,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/KlangHaus/vitepress-plugin-mermaid-diagram.git"
+    "url": "https://github.com/KlangHaus/vitepress-plugin-diagram.git"
   },
   "bugs": {
-    "url": "https://github.com/KlangHaus/vitepress-plugin-mermaid-diagram/issues"
+    "url": "https://github.com/KlangHaus/vitepress-plugin-diagram/issues"
   },
-  "homepage": "https://klanghaus.github.io/vitepress-plugin-mermaid-diagram/",
+  "homepage": "https://klanghaus.github.io/vitepress-plugin-diagram/",
   "peerDependencies": {
     "markdown-it": ">=13.0.0"
   },
