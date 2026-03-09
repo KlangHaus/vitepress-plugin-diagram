@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitepress';
-import { render, type RenderOptions } from '../../packages/diagram/src/index';
+import { render, type RenderOptions } from '../../src/index';
 import type MarkdownIt from 'markdown-it';
 
 function escapeHtml(s: string): string {

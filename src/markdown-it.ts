@@ -1,5 +1,5 @@
 import type MarkdownIt from 'markdown-it';
-import { render, type RenderOptions } from 'diagram';
+import { render, type RenderOptions } from './diagram.js';
 
 export function diagramPlugin(md: MarkdownIt, options?: RenderOptions): void {
   const originalFence = md.renderer.rules.fence!;

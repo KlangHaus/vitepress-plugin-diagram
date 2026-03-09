@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite';
-import { render, type RenderOptions } from 'diagram';
+import { render, type RenderOptions } from './diagram.js';
 
 export function viteDiagramPlugin(options?: RenderOptions): Plugin {
   return {

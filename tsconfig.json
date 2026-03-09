@@ -3,14 +3,14 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist"
   },
-  "references": [
-    { "path": "packages/diagram" },
-    { "path": "packages/vitepress-plugin" }
-  ],
-  "include": []
+  "include": ["src"]
 }
