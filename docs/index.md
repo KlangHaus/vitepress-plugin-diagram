@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: diagram
+  name: vitepress-plugin-mermaid-diagram
   text: Diagrams without mermaid.js
   tagline: Build-time Mermaid-compatible SVG rendering. No client-side JS. No heavy dependencies.
   actions:

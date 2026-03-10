@@ -3,17 +3,17 @@
 ## Installation
 
 ```bash
-npm install vitepress-plugin-diagram
+npm install vitepress-plugin-mermaid-diagram
 ```
 
-## Konfiguration
+## Configuration
 
-Tilf\u00f8j pluginnet til din VitePress config:
+Add the plugin to your VitePress config:
 
 ```ts
 // .vitepress/config.ts
 import { defineConfig } from 'vitepress';
-import { diagramPlugin } from 'vitepress-plugin-diagram';
+import { diagramPlugin } from 'vitepress-plugin-mermaid-diagram';
 
 export default defineConfig({
   markdown: {
@@ -24,61 +24,67 @@ export default defineConfig({
 });
 ```
 
-## Brug
+## Usage
 
-Skriv diagrammer i ` ```mermaid ` code blocks i dine markdown-filer:
+Write diagrams in ` ```mermaid ` code blocks in your markdown files:
 
 ````md
 ```mermaid
 graph TD
-  A[Start] --> B{Er det fredag?}
-  B -->|Ja| C[Party!]
-  B -->|Nej| D[Arbejd videre]
+  A[Start] --> B{Is it Friday?}
+  B -->|Yes| C[Party!]
+  B -->|No| D[Keep working]
 ```
 ````
 
-Resultatet:
+Result:
 
 ```mermaid
 graph TD
-  A[Start] --> B{Er det fredag?}
-  B -->|Ja| C[Party!]
-  B -->|Nej| D[Arbejd videre]
+  A[Start] --> B{Is it Friday?}
+  B -->|Yes| C[Party!]
+  B -->|No| D[Keep working]
 ```
 
-## Understøttede diagramtyper
+## Supported diagram types
 
-| Type | Keyword | Eksempel |
-|------|---------|----------|
-| Flowchart | `graph TD` / `flowchart LR` | [Se docs](/diagrams/flowchart) |
-| Sequence | `sequenceDiagram` | [Se docs](/diagrams/sequence) |
-| Class | `classDiagram` | [Se docs](/diagrams/class-diagram) |
+| Type | Keyword | Docs |
+|------|---------|------|
+| Flowchart | `graph TD` / `flowchart LR` | [See docs](/diagrams/flowchart) |
+| Sequence | `sequenceDiagram` | [See docs](/diagrams/sequence) |
+| Class | `classDiagram` | [See docs](/diagrams/class-diagram) |
 
-## Vite Plugin (`.mmd` filer)
+## Vite plugin for `.mmd` files
 
-Du kan også importere `.mmd`-filer direkte:
+You can also import `.mmd` files directly:
 
 ```ts
-// vite.config.ts
-import { viteDiagramPlugin } from 'vitepress-plugin-diagram';
+// .vitepress/config.ts
+import { viteDiagramPlugin } from 'vitepress-plugin-mermaid-diagram';
 
-export default {
-  plugins: [viteDiagramPlugin()],
-};
+export default defineConfig({
+  vite: {
+    plugins: [viteDiagramPlugin()],
+  },
+});
 ```
 
-```ts
-// I din kode
-import diagramSvg from './architecture.mmd';
-document.getElementById('diagram').innerHTML = diagramSvg;
+```vue
+<script setup>
+import diagram from './architecture.mmd'
+</script>
+
+<template>
+  <div v-html="diagram" />
+</template>
 ```
 
 ## Standalone API
 
 ```ts
-import { renderDiagram } from 'vitepress-plugin-diagram';
+import { render } from 'vitepress-plugin-mermaid-diagram';
 
-const svg = renderDiagram(`graph TD
+const svg = render(`graph TD
   A --> B --> C
 `);
 
