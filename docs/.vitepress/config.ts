@@ -29,8 +29,9 @@ function diagramPlugin(md: MarkdownIt, options?: RenderOptions): void {
 }
 
 export default defineConfig({
-  title: 'vitepress-plugin-diagram',
+  title: 'vitepress-plugin-mermaid-diagram',
   description: 'Build-time Mermaid-compatible diagram renderer — no mermaid.js required',
+  base: '/vitepress-plugin-diagram/',
 
   themeConfig: {
     nav: [
