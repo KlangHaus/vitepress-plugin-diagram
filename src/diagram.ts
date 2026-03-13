@@ -13,6 +13,8 @@ export interface RenderOptions {
   theme?: Partial<Theme>;
   /** Dark mode theme. Set to `false` to disable dark mode styles. Default: built-in dark theme. */
   darkTheme?: Partial<Theme> | false;
+  /** Wrap diagrams in DiagramPreview component with tabs, code view, and fullscreen. */
+  preview?: boolean;
   flowchart?: FlowchartLayoutConfig;
   sequence?: SequenceLayoutConfig;
   classDiagram?: ClassLayoutConfig;

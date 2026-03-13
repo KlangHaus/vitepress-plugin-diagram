@@ -1,6 +1,10 @@
 import type MarkdownIt from 'markdown-it';
 import { render, type RenderOptions } from './diagram.js';
 
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 export function diagramPlugin(md: MarkdownIt, options?: RenderOptions): void {
   const originalFence = md.renderer.rules.fence!;
 
@@ -14,7 +18,18 @@ export function diagramPlugin(md: MarkdownIt, options?: RenderOptions): void {
         // ("Tags with side effect are ignored in client component templates").
         // Dark mode is handled via an external CSS file instead.
         const svg = render(token.content, { ...options, darkTheme: false });
-        if (svg) return `<div class="vp-diagram">${svg}</div>`;
+        if (svg) {
+          if (options?.preview) {
+            const escaped = escapeHtml(token.content.trim());
+            return [
+              '<DiagramPreview>',
+              `<template #preview>${svg}</template>`,
+              `<template #code><pre class="vp-dp-source"><code>${escaped}</code></pre></template>`,
+              '</DiagramPreview>',
+            ].join('\n');
+          }
+          return `<div class="vp-diagram" style="display:flex;justify-content:center"><div style="max-width:100%;overflow-x:auto">${svg}</div></div>`;
+        }
       } catch {
         // Fall through to default on parse error
       }

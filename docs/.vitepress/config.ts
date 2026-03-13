@@ -1,32 +1,5 @@
 import { defineConfig } from 'vitepress';
-import { render, type RenderOptions } from '../../src/index';
-import type MarkdownIt from 'markdown-it';
-
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function diagramPlugin(md: MarkdownIt, options?: RenderOptions): void {
-  const originalFence = md.renderer.rules.fence!;
-  md.renderer.rules.fence = function (tokens, idx, mdOptions, env, self) {
-    const token = tokens[idx];
-    if (token.info.trim() === 'mermaid' || token.info.trim() === 'diagram') {
-      try {
-        const svg = render(token.content, { ...options, darkTheme: false });
-        if (svg) {
-          const escaped = escapeHtml(token.content.trim());
-          return [
-            '<DiagramPreview>',
-            `<template #preview>${svg}</template>`,
-            `<template #code><pre class="diagram-source"><code>${escaped}</code></pre></template>`,
-            '</DiagramPreview>',
-          ].join('\n');
-        }
-      } catch { /* fall through */ }
-    }
-    return originalFence.call(this, tokens, idx, mdOptions, env, self);
-  };
-}
+import { diagramPlugin } from '../../src/index';
 
 export default defineConfig({
   title: 'vitepress-plugin-mermaid-diagram',
@@ -79,7 +52,7 @@ export default defineConfig({
 
   markdown: {
     config(md) {
-      md.use(diagramPlugin);
+      md.use(diagramPlugin, { preview: true });
     },
   },
 });

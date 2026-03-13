@@ -1,6 +1,6 @@
 {
   "name": "vitepress-plugin-mermaid-diagram",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "VitePress plugin that renders Mermaid-compatible diagrams to SVG at build time — zero-dependency Sugiyama layout engine, no mermaid.js required",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,10 +10,13 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./DiagramPreview.vue": "./src/client/DiagramPreview.vue",
+    "./diagram-dark.css": "./dist/diagram-dark.css"
   },
   "files": [
     "dist",
+    "src/client",
     "README.md",
     "LICENSE"
   ],

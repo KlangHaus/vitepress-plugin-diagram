@@ -1,5 +1,5 @@
 import DefaultTheme from 'vitepress/theme'
-import DiagramPreview from './DiagramPreview.vue'
+import DiagramPreview from '../../../src/client/DiagramPreview.vue'
 import './diagram-dark.css'
 
 export default {
