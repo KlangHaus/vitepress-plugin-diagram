@@ -38,7 +38,7 @@ onBeforeUnmount(() => {
 })
 
 function getSvgContainer(): HTMLElement | null {
-  return overlay.value?.querySelector('.fs-svg-wrap') as HTMLElement | null
+  return overlay.value?.querySelector('.vp-dp-fs-svg-wrap') as HTMLElement | null
 }
 
 function applyTransform() {
