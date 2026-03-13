@@ -9,8 +9,8 @@ export function renderFlowchart(layout: LayoutResult, theme: Theme): string {
 
   // subgraph groups
   for (const g of layout.groups) {
-    out.push(rect(g.x, g.y, g.width, g.height, { fill: theme.subgraphFill, stroke: theme.subgraphStroke, strokeDasharray: '5,5', rx: 4, ry: 4 }));
-    if (g.label) out.push(text(g.x + 8, g.y + 14, g.label, { fill: theme.subgraphLabelColor, fontSize: 12, textAnchor: 'start', dominantBaseline: 'auto' }));
+    out.push(rect(g.x, g.y, g.width, g.height, { fill: theme.subgraphFill, stroke: theme.subgraphStroke, strokeDasharray: '5,5', rx: 4, ry: 4, cssClass: 'vp-d-subgraph' }));
+    if (g.label) out.push(text(g.x + 8, g.y + 14, g.label, { fill: theme.subgraphLabelColor, fontSize: 12, textAnchor: 'start', dominantBaseline: 'auto', cssClass: 'vp-d-subgraph-label' }));
   }
 
   // edges
@@ -22,13 +22,13 @@ export function renderFlowchart(layout: LayoutResult, theme: Theme): string {
 
     if (edge.points.length >= 2) {
       const d = edge.points.length > 2 ? smoothPathD(edge.points) : pointsToPathD(edge.points);
-      out.push(path(d, { stroke: theme.edgeColor, strokeWidth: sw, strokeDasharray: dash, markerEnd: marker }));
+      out.push(path(d, { stroke: theme.edgeColor, strokeWidth: sw, strokeDasharray: dash, markerEnd: marker, cssClass: 'vp-d-edge' }));
     }
 
     if (data?.label && edge.points.length >= 2) {
       const mid = edge.points[Math.floor(edge.points.length / 2)];
-      out.push(rect(mid.x - 20, mid.y - 10, 40, 20, { fill: theme.edgeLabelBg, stroke: 'none', rx: 3, ry: 3 }));
-      out.push(text(mid.x, mid.y, data.label, { fill: theme.edgeLabelColor, fontSize: 12 }));
+      out.push(rect(mid.x - 20, mid.y - 10, 40, 20, { fill: theme.edgeLabelBg, stroke: 'none', rx: 3, ry: 3, cssClass: 'vp-d-edge-label-bg' }));
+      out.push(text(mid.x, mid.y, data.label, { fill: theme.edgeLabelColor, fontSize: 12, cssClass: 'vp-d-edge-label' }));
     }
   }
 
@@ -37,19 +37,19 @@ export function renderFlowchart(layout: LayoutResult, theme: Theme): string {
     const data = node.data as FlowchartNode;
     const x = node.x - node.width / 2, y = node.y - node.height / 2;
 
-    // Semantic colors per shape
-    const shapeFill = (shape: string) => {
+    // Semantic colors and CSS class per shape
+    const shapeStyle = (shape: string) => {
       switch (shape) {
-        case 'diamond':      return { fill: theme.decisionFill, stroke: theme.decisionStroke };
+        case 'diamond':      return { fill: theme.decisionFill, stroke: theme.decisionStroke, cssClass: 'vp-d-decision' };
         case 'circle': case 'doubleCircle': case 'stadium':
-                             return { fill: theme.terminalFill, stroke: theme.terminalStroke };
+                             return { fill: theme.terminalFill, stroke: theme.terminalStroke, cssClass: 'vp-d-terminal' };
         case 'parallelogram': case 'cylinder':
-                             return { fill: theme.dataFill, stroke: theme.dataStroke };
-        default:             return { fill: theme.processFill, stroke: theme.processStroke };
+                             return { fill: theme.dataFill, stroke: theme.dataStroke, cssClass: 'vp-d-data' };
+        default:             return { fill: theme.processFill, stroke: theme.processStroke, cssClass: 'vp-d-process' };
       }
     };
-    const { fill, stroke } = shapeFill(data.shape);
-    const opts = { fill, stroke, strokeWidth: 1.5 };
+    const { fill, stroke, cssClass } = shapeStyle(data.shape);
+    const opts = { fill, stroke, strokeWidth: 1.5, cssClass };
 
     switch (data.shape) {
       case 'rect':         out.push(rect(x, y, node.width, node.height, opts)); break;
@@ -64,26 +64,26 @@ export function renderFlowchart(layout: LayoutResult, theme: Theme): string {
       case 'stadium':      out.push(stadium(x, y, node.width, node.height, opts)); break;
       case 'subroutine':
         out.push(rect(x, y, node.width, node.height, opts));
-        out.push(rect(x + 8, y, 0, node.height, { stroke }));
-        out.push(rect(x + node.width - 8, y, 0, node.height, { stroke }));
+        out.push(rect(x + 8, y, 0, node.height, { stroke, cssClass }));
+        out.push(rect(x + node.width - 8, y, 0, node.height, { stroke, cssClass }));
         break;
       case 'cylinder':     out.push(renderCylinder(node.x, node.y, node.width, node.height, opts)); break;
       default:             out.push(rect(x, y, node.width, node.height, opts));
     }
 
-    out.push(text(node.x, node.y, data.label, { fill: theme.nodeTextColor, fontSize: theme.fontSize, fontFamily: theme.fontFamily }));
+    out.push(text(node.x, node.y, data.label, { fill: theme.nodeTextColor, fontSize: theme.fontSize, fontFamily: theme.fontFamily, cssClass: 'vp-d-node-text' }));
   }
 
   return out.join('\n');
 }
 
-function renderCylinder(cx: number, cy: number, w: number, h: number, opts: { fill?: string; stroke?: string; strokeWidth?: number }): string {
+function renderCylinder(cx: number, cy: number, w: number, h: number, opts: { fill?: string; stroke?: string; strokeWidth?: number; cssClass?: string }): string {
   const x = cx - w / 2, y = cy - h / 2, ry = 8;
   const body = `M ${x} ${y + ry} A ${w / 2} ${ry} 0 0 1 ${x + w} ${y + ry} L ${x + w} ${y + h - ry} A ${w / 2} ${ry} 0 0 1 ${x} ${y + h - ry} Z`;
   const top = `M ${x} ${y + ry} A ${w / 2} ${ry} 0 0 0 ${x + w} ${y + ry}`;
   return [
-    path(body, { fill: opts.fill, stroke: opts.stroke, strokeWidth: opts.strokeWidth }),
-    path(top, { stroke: opts.stroke, strokeWidth: opts.strokeWidth }),
+    path(body, { fill: opts.fill, stroke: opts.stroke, strokeWidth: opts.strokeWidth, cssClass: opts.cssClass }),
+    path(top, { stroke: opts.stroke, strokeWidth: opts.strokeWidth, cssClass: opts.cssClass }),
   ].join('\n');
 }
 

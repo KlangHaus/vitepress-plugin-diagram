@@ -68,10 +68,25 @@ export interface TextOpts {
   fontWeight?: string;
   textAnchor?: 'start' | 'middle' | 'end';
   dominantBaseline?: string;
+  cssClass?: string;
 }
 
 export function text(x: number, y: number, content: string, opts: TextOpts = {}): string {
-  return `<text ${attrs({ x, y, fill: opts.fill ?? '#333', 'font-size': opts.fontSize ?? 14, 'font-family': opts.fontFamily, 'font-weight': opts.fontWeight, 'text-anchor': opts.textAnchor ?? 'middle', 'dominant-baseline': opts.dominantBaseline ?? 'central' })}>${escapeXml(content)}</text>`;
+  const fontSize = opts.fontSize ?? 14;
+  const baseAttrs = { fill: opts.fill ?? '#333', 'font-size': fontSize, 'font-family': opts.fontFamily, 'font-weight': opts.fontWeight, 'text-anchor': opts.textAnchor ?? 'middle', 'dominant-baseline': opts.dominantBaseline ?? 'central', class: opts.cssClass };
+
+  const lines = content.split('\n');
+  if (lines.length === 1) {
+    return `<text ${attrs({ x, y, ...baseAttrs })}>${escapeXml(content)}</text>`;
+  }
+
+  // Multiline: center the block vertically around y using <tspan> elements
+  const lineHeight = fontSize * 1.4;
+  const startY = y - (lineHeight * (lines.length - 1)) / 2;
+  const tspans = lines.map((line, i) =>
+    `<tspan x="${x}"${i > 0 ? ` dy="${lineHeight}"` : ''}>${escapeXml(line)}</tspan>`,
+  ).join('');
+  return `<text ${attrs({ x, y: startY, ...baseAttrs })}>${tspans}</text>`;
 }
 
 // ── Lines & paths ───────────────────────────────────────────────────────────
@@ -82,29 +97,34 @@ export interface LineOpts {
   strokeDasharray?: string;
   markerEnd?: string;
   markerStart?: string;
+  cssClass?: string;
 }
 
 export function line(x1: number, y1: number, x2: number, y2: number, opts: LineOpts = {}): string {
-  return `<line ${attrs({ x1, y1, x2, y2, stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, 'marker-end': opts.markerEnd, 'marker-start': opts.markerStart })}/>`;
+  return `<line ${attrs({ x1, y1, x2, y2, stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, 'marker-end': opts.markerEnd, 'marker-start': opts.markerStart, class: opts.cssClass })}/>`;
 }
 
 export function path(d: string, opts: LineOpts & { fill?: string } = {}): string {
-  return `<path ${attrs({ d, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, 'marker-end': opts.markerEnd, 'marker-start': opts.markerStart })}/>`;
+  return `<path ${attrs({ d, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, 'marker-end': opts.markerEnd, 'marker-start': opts.markerStart, class: opts.cssClass })}/>`;
 }
 
 // ── Structural ──────────────────────────────────────────────────────────────
 
 export function defs(content: string): string { return `<defs>\n${content}\n</defs>`; }
 
-export function wrap(content: string, width: number, height: number, padding = 20): string {
+export function wrap(content: string, width: number, height: number, padding = 20, styleBlock?: string): string {
   const w = width + padding * 2, h = height + padding * 2;
-  return [
+  const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img">`,
+  ];
+  if (styleBlock) parts.push(`<style>${styleBlock}</style>`);
+  parts.push(
     `<g transform="translate(${padding},${padding})">`,
     content,
     '</g>',
     '</svg>',
-  ].join('\n');
+  );
+  return parts.join('\n');
 }
 
 // ── Arrow markers ───────────────────────────────────────────────────────────
@@ -112,12 +132,12 @@ export function wrap(content: string, width: number, height: number, padding = 2
 export function arrowDefs(theme: Theme): string {
   const c = theme.arrowColor;
   return [
-    `<marker id="arrow-normal" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${c}"/></marker>`,
-    `<marker id="arrow-open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="${c}" stroke-width="1.5"/></marker>`,
-    `<marker id="arrow-cross" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 2 2 L 8 8 M 8 2 L 2 8" fill="none" stroke="${c}" stroke-width="1.5"/></marker>`,
-    `<marker id="arrow-circle" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><circle cx="5" cy="5" r="4" fill="${c}"/></marker>`,
-    `<marker id="arrow-diamond-filled" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 6 L 6 0 L 12 6 L 6 12 z" fill="${c}"/></marker>`,
-    `<marker id="arrow-diamond-open" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 6 L 6 0 L 12 6 L 6 12 z" fill="white" stroke="${c}"/></marker>`,
-    `<marker id="arrow-triangle-open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="white" stroke="${c}"/></marker>`,
+    `<marker id="arrow-normal" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${c}" class="vp-d-arrow-filled"/></marker>`,
+    `<marker id="arrow-open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="${c}" stroke-width="1.5" class="vp-d-arrow-stroke"/></marker>`,
+    `<marker id="arrow-cross" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 2 2 L 8 8 M 8 2 L 2 8" fill="none" stroke="${c}" stroke-width="1.5" class="vp-d-arrow-stroke"/></marker>`,
+    `<marker id="arrow-circle" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><circle cx="5" cy="5" r="4" fill="${c}" class="vp-d-arrow-filled"/></marker>`,
+    `<marker id="arrow-diamond-filled" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 6 L 6 0 L 12 6 L 6 12 z" fill="${c}" class="vp-d-arrow-filled"/></marker>`,
+    `<marker id="arrow-diamond-open" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 6 L 6 0 L 12 6 L 6 12 z" fill="white" stroke="${c}" class="vp-d-arrow-open"/></marker>`,
+    `<marker id="arrow-triangle-open" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="white" stroke="${c}" class="vp-d-arrow-open"/></marker>`,
   ].join('\n');
 }

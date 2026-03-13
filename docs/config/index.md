@@ -25,6 +25,80 @@ export default defineConfig({
 });
 ```
 
+## Dark mode
+
+Diagrams use CSS classes on all SVG elements (e.g. `vp-d-process`, `vp-d-decision`). To enable dark mode, add CSS rules that override colors when `.dark` is on an ancestor. SVG presentation attributes have lower specificity than CSS rules, so the overrides work automatically.
+
+### VitePress setup
+
+Add a CSS file to your theme:
+
+```css
+/* .vitepress/theme/diagram-dark.css */
+.dark .vp-d-process { fill: #1e3a5f; stroke: #63b3ed; }
+.dark .vp-d-decision { fill: #4a3728; stroke: #f6ad55; }
+.dark .vp-d-terminal { fill: #1a3a2a; stroke: #68d391; }
+.dark .vp-d-data { fill: #2d1f3d; stroke: #b794f4; }
+.dark .vp-d-node-text { fill: #e2e8f0; }
+.dark .vp-d-edge { stroke: #a0aec0; }
+/* ... see full list in darkTheme export */
+```
+
+Then import it:
+
+```ts
+// .vitepress/theme/index.ts
+import './diagram-dark.css'
+```
+
+### Programmatic access
+
+```ts
+import { darkTheme, darkModeCSS, generateDarkModeStyles } from 'vitepress-plugin-mermaid-diagram';
+
+// Pre-generated CSS string using default dark palette
+console.log(darkModeCSS);
+
+// Generate CSS from a custom dark theme
+const customCSS = generateDarkModeStyles({ ...darkTheme, processFill: '#1e293b' });
+```
+
+### Standalone usage (non-VitePress)
+
+When using `render()` directly (not through the markdown-it plugin), set `darkTheme` to embed a `<style>` block inside the SVG:
+
+```ts
+import { render } from 'vitepress-plugin-mermaid-diagram';
+
+// Dark mode styles embedded in SVG (default)
+const svg = render('graph TD\n  A --> B');
+
+// Disable embedded dark mode styles
+const svgNoDark = render('graph TD\n  A --> B', { darkTheme: false });
+
+// Custom dark palette
+const svgCustom = render('graph TD\n  A --> B', {
+  darkTheme: { processFill: '#1e293b' },
+});
+```
+
+## Multiline labels
+
+Use `\n` in node labels to create multiline text:
+
+````md
+```mermaid
+graph TD
+  A[First line\nSecond line] --> B[Single line]
+```
+````
+
+Multiline labels are rendered using `<tspan>` elements, centered vertically within the node.
+
+## Responsive SVG
+
+Diagrams render without fixed `width`/`height` attributes — only `viewBox` is set. This means SVGs scale to fill their container and are fully responsive.
+
 ## Flowchart theme
 
 | Property | Default | Description |

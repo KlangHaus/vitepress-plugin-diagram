@@ -4,7 +4,7 @@ export { render, type RenderOptions } from './diagram.js';
 // Re-export everything from diagram for advanced usage
 export * from './parse/index.js';
 export * from './layout/index.js';
-export { renderSVG, defaultTheme, measureText, measureNodeSize } from './render/index.js';
+export { renderSVG, defaultTheme, darkTheme, darkModeCSS, measureText, measureNodeSize } from './render/index.js';
 export type { Theme } from './render/theme.js';
 export type { DiagramKind } from './render/index.js';
 export type { Point } from './util/math.js';

@@ -1,0 +1,59 @@
+/* Diagram container — responsive sizing */
+.vp-diagram {
+  display: flex;
+  justify-content: center;
+}
+
+.vp-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Dark mode overrides for diagram SVG elements.
+   SVG presentation attributes have lower specificity than CSS rules,
+   so these selectors override the light-mode fill/stroke automatically. */
+
+/* Flowchart nodes */
+.dark .vp-d-process { fill: #1e3a5f; stroke: #63b3ed; }
+.dark .vp-d-decision { fill: #4a3728; stroke: #f6ad55; }
+.dark .vp-d-terminal { fill: #1a3a2a; stroke: #68d391; }
+.dark .vp-d-data { fill: #2d1f3d; stroke: #b794f4; }
+.dark .vp-d-node-text { fill: #e2e8f0; }
+
+/* Edges */
+.dark .vp-d-edge { stroke: #a0aec0; }
+.dark .vp-d-edge-label { fill: #cbd5e0; }
+.dark .vp-d-edge-label-bg { fill: #2d3748dd; }
+
+/* Subgraphs */
+.dark .vp-d-subgraph { fill: #1a202c; stroke: #4a5568; }
+.dark .vp-d-subgraph-label { fill: #a0aec0; }
+
+/* Arrow markers */
+.dark .vp-d-arrow-filled { fill: #a0aec0; }
+.dark .vp-d-arrow-stroke { stroke: #a0aec0; }
+.dark .vp-d-arrow-open { fill: #1a202c; stroke: #a0aec0; }
+
+/* Sequence diagram */
+.dark .vp-d-participant { fill: #1e3a5f; stroke: #63b3ed; }
+.dark .vp-d-participant-text { fill: #e2e8f0; }
+.dark .vp-d-lifeline { stroke: #4a5568; }
+.dark .vp-d-actor circle, .dark .vp-d-actor line { stroke: #63b3ed; }
+.dark .vp-d-note { fill: #3d3520; stroke: #d4ac0d; }
+.dark .vp-d-note-text { fill: #fef9e7; }
+.dark .vp-d-message { stroke: #a0aec0; }
+.dark .vp-d-message-label { fill: #e2e8f0; }
+.dark .vp-d-block { stroke: #718096; }
+.dark .vp-d-block-label-bg { fill: #2d3748; stroke: #718096; }
+.dark .vp-d-block-label { fill: #cbd5e0; }
+
+/* Class diagram */
+.dark .vp-d-class-header { fill: #2b6cb0; stroke: #63b3ed; }
+.dark .vp-d-class-header-text { fill: #ffffff; }
+.dark .vp-d-class-body { fill: #1a202c; stroke: #63b3ed; }
+.dark .vp-d-class-text { fill: #e2e8f0; }
+.dark .vp-d-class-section { stroke: #4a5568; }
+.dark .vp-d-annotation { fill: #a0aec0; }
+.dark .vp-d-namespace { fill: #1a202c; stroke: #4a5568; }
+.dark .vp-d-namespace-label { fill: #cbd5e0; }
+.dark .vp-d-relation-label { fill: #cbd5e0; }

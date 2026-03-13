@@ -4,10 +4,11 @@ import { wrap } from './svg.js';
 import { renderFlowchart } from './flowchart.js';
 import { renderSequence } from './sequence.js';
 import { renderClassDiagram } from './class-diagram.js';
+import { generateDarkModeStyles } from './theme.js';
 
 export type DiagramKind = 'flowchart' | 'sequence' | 'classDiagram';
 
-export function renderSVG(layout: LayoutResult, kind: DiagramKind, theme: Theme): string {
+export function renderSVG(layout: LayoutResult, kind: DiagramKind, theme: Theme, dark?: Theme): string {
   let content: string;
 
   switch (kind) {
@@ -16,8 +17,9 @@ export function renderSVG(layout: LayoutResult, kind: DiagramKind, theme: Theme)
     case 'classDiagram': content = renderClassDiagram(layout, theme); break;
   }
 
-  return wrap(content, layout.width, layout.height);
+  const styleBlock = dark ? generateDarkModeStyles(dark) : undefined;
+  return wrap(content, layout.width, layout.height, 20, styleBlock);
 }
 
-export { defaultTheme, type Theme } from './theme.js';
+export { defaultTheme, darkTheme, darkModeCSS, type Theme } from './theme.js';
 export { measureText, measureNodeSize } from './measure.js';

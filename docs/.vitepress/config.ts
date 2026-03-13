@@ -12,7 +12,7 @@ function diagramPlugin(md: MarkdownIt, options?: RenderOptions): void {
     const token = tokens[idx];
     if (token.info.trim() === 'mermaid' || token.info.trim() === 'diagram') {
       try {
-        const svg = render(token.content, options);
+        const svg = render(token.content, { ...options, darkTheme: false });
         if (svg) {
           const escaped = escapeHtml(token.content.trim());
           return [
@@ -51,6 +51,8 @@ export default defineConfig({
           items: [
             { text: 'Getting Started', link: '/guide/getting-started' },
             { text: 'How It Works', link: '/guide/how-it-works' },
+            { text: 'Mermaid Syntax', link: '/guide/mermaid-syntax' },
+            { text: 'Sugiyama Algorithm', link: '/guide/sugiyama' },
           ],
         },
       ],

@@ -228,10 +228,12 @@ function parseNodeChain(line: string, ast: FlowchartAST, subgraphStack: Subgraph
   }
 }
 
-function ensureNode(id: string, label: string, shape: NodeShape, ast: FlowchartAST): void {
+function ensureNode(id: string, rawLabel: string, shape: NodeShape, ast: FlowchartAST): void {
+  // Convert literal \n escape sequences to actual newlines for multiline labels
+  const label = rawLabel.replace(/\\n/g, '\n');
   if (!ast.nodes.has(id)) {
     ast.nodes.set(id, { id, label, shape });
-  } else if (label !== id) {
+  } else if (rawLabel !== id) {
     const existing = ast.nodes.get(id)!;
     existing.label = label;
     existing.shape = shape;
