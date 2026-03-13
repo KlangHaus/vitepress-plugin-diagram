@@ -1,5 +1,6 @@
 import { defineConfig } from 'tsup'
 import { writeFileSync } from 'fs'
+import { darkTheme, generateDarkModeStyles } from './src/render/theme'
 
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -7,9 +8,7 @@ export default defineConfig({
   dts: true,
   clean: true,
   external: ['markdown-it'],
-  async onSuccess() {
-    // Generate dark mode CSS file from the built-in dark theme
-    const { darkModeCSS } = await import('./dist/index.js')
+  onSuccess() {
     const css = `/* Auto-generated dark mode styles for vitepress-plugin-mermaid-diagram */
 /* Import this in your VitePress theme to enable dark mode support */
 
@@ -23,7 +22,7 @@ export default defineConfig({
   height: auto;
 }
 
-${darkModeCSS}
+${generateDarkModeStyles(darkTheme)}
 `
     writeFileSync('dist/diagram-dark.css', css)
     console.log('CSS dist/diagram-dark.css')
