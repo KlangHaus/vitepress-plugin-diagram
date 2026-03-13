@@ -97,7 +97,7 @@ Multiline labels are rendered using `<tspan>` elements, centered vertically with
 
 ## Responsive SVG
 
-Diagrams render without fixed `width`/`height` attributes — only `viewBox` is set. This means SVGs scale to fill their container and are fully responsive.
+Diagrams render with `width`, `height`, and `viewBox` attributes. The wrapper `<div>` has inline styles for responsive behavior (`max-width: 100%`, overflow scroll). No external CSS is needed — diagrams scale down on small screens automatically.
 
 ## Flowchart theme
 
@@ -207,6 +207,36 @@ md.use(diagramPlugin, {
   },
 });
 ```
+
+## Preview component
+
+Enable `preview: true` to wrap diagrams in a `DiagramPreview` component:
+
+```ts
+md.use(diagramPlugin, { preview: true });
+```
+
+This requires registering the component in your VitePress theme:
+
+```ts
+// .vitepress/theme/index.ts
+import DefaultTheme from 'vitepress/theme'
+import DiagramPreview from 'vitepress-plugin-mermaid-diagram/DiagramPreview.vue'
+import 'vitepress-plugin-mermaid-diagram/diagram-dark.css'
+
+export default {
+  extends: DefaultTheme,
+  enhanceApp({ app }) {
+    app.component('DiagramPreview', DiagramPreview)
+  },
+}
+```
+
+Features:
+- **Preview / Code tabs** — toggle between rendered diagram and mermaid source
+- **Fullscreen** — open in a full-screen overlay with pan & zoom
+- **Pan & zoom** — scroll to zoom (0.1x–10x), drag to pan, reset button
+- **Keyboard** — Esc to close fullscreen
 
 ## Standalone usage
 

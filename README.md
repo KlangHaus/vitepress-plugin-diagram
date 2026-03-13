@@ -16,6 +16,9 @@ Build-time Mermaid diagram renderer for VitePress. Write standard Mermaid syntax
 - **Custom Sugiyama layout engine** — from-scratch layered graph layout, replaces dagre entirely
 - **Mermaid-compatible syntax** — uses the same fenced code blocks your team already knows
 - **Semantic theming** — decision nodes get amber, terminals get green, data gets purple
+- **Dark mode** — built-in dark theme with CSS class overrides, works with VitePress theme switching
+- **Preview component** — optional DiagramPreview with code view, fullscreen, pan & zoom
+- **Multiline labels** — use `\n` in node labels for multi-line text via `<tspan>`
 - **TypeScript-first** — fully typed API with exported types for everything
 
 ### Supported diagrams
@@ -65,7 +68,63 @@ export default defineConfig({
 })
 ```
 
-Any fenced code block with the language `mermaid` or `diagram` is rendered to static SVG at build time. The output is wrapped in a `<div class="vp-diagram">` for styling.
+Any fenced code block with the language `mermaid` or `diagram` is rendered to static SVG at build time. The output is wrapped in a `<div class="vp-diagram">` with responsive inline styles.
+
+### With preview component (recommended)
+
+Enable `preview: true` for an interactive diagram viewer with tabs (Preview/Code), fullscreen mode, and pan & zoom:
+
+```ts
+// .vitepress/config.ts
+import { defineConfig } from 'vitepress'
+import { diagramPlugin } from 'vitepress-plugin-mermaid-diagram'
+
+export default defineConfig({
+  markdown: {
+    config(md) {
+      md.use(diagramPlugin, { preview: true })
+    },
+  },
+})
+```
+
+Then register the component and import dark mode CSS in your theme:
+
+```ts
+// .vitepress/theme/index.ts
+import DefaultTheme from 'vitepress/theme'
+import DiagramPreview from 'vitepress-plugin-mermaid-diagram/DiagramPreview.vue'
+import 'vitepress-plugin-mermaid-diagram/diagram-dark.css'
+
+export default {
+  extends: DefaultTheme,
+  enhanceApp({ app }) {
+    app.component('DiagramPreview', DiagramPreview)
+  },
+}
+```
+
+The DiagramPreview component provides:
+- **Preview / Code tabs** — switch between rendered diagram and source
+- **Fullscreen** — open diagram in a full-screen overlay
+- **Pan & zoom** — scroll to zoom (0.1x–10x), drag to pan, reset button
+- **Keyboard** — press Esc to close fullscreen
+
+### Dark mode
+
+Import the pre-built CSS file for automatic dark mode support:
+
+```ts
+import 'vitepress-plugin-mermaid-diagram/diagram-dark.css'
+```
+
+Or generate custom dark mode CSS programmatically:
+
+```ts
+import { darkTheme, generateDarkModeStyles } from 'vitepress-plugin-mermaid-diagram'
+
+const css = generateDarkModeStyles({ ...darkTheme, processFill: '#1e293b' })
+```
 
 ### With theme and layout options
 
@@ -285,6 +344,12 @@ All theme properties are optional — pass a partial object to override defaults
 
 markdown-it plugin. Renders `mermaid` and `diagram` fenced code blocks to static SVG.
 
+Options:
+- `preview` — wrap output in `<DiagramPreview>` component with tabs and fullscreen (default: `false`)
+- `theme` — partial theme overrides
+- `darkTheme` — dark mode theme overrides, or `false` to disable (default: built-in dark theme for standalone, disabled for VitePress)
+- `flowchart` / `sequence` / `classDiagram` — layout options
+
 ### `viteDiagramPlugin(options?)`
 
 Vite plugin. Transforms `.mmd` file imports into SVG string exports.
@@ -349,20 +414,15 @@ const svg = renderSVG(layout, 'flowchart', defaultTheme)
 
 ## Styling
 
-The rendered SVGs are wrapped in `<div class="vp-diagram">`:
+The rendered SVGs are wrapped in `<div class="vp-diagram">` with inline responsive styles (centering, `max-width: 100%`, overflow scroll). No external CSS is required for basic usage.
 
-```css
-.vp-diagram {
-  display: flex;
-  justify-content: center;
-  margin: 24px 0;
-}
+For dark mode, import the pre-built CSS:
 
-.vp-diagram svg {
-  max-width: 100%;
-  height: auto;
-}
+```ts
+import 'vitepress-plugin-mermaid-diagram/diagram-dark.css'
 ```
+
+Or write your own overrides using the CSS classes on SVG elements (`vp-d-process`, `vp-d-decision`, `vp-d-terminal`, `vp-d-data`, `vp-d-node-text`, `vp-d-edge`, etc.).
 
 ## Contributors
 

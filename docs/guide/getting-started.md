@@ -6,7 +6,7 @@
 npm install vitepress-plugin-mermaid-diagram
 ```
 
-## Configuration
+## Basic setup
 
 Add the plugin to your VitePress config:
 
@@ -23,6 +23,46 @@ export default defineConfig({
   },
 });
 ```
+
+## Enhanced setup (recommended)
+
+Enable `preview: true` for an interactive diagram viewer with code tabs, fullscreen, pan & zoom:
+
+```ts
+// .vitepress/config.ts
+import { defineConfig } from 'vitepress';
+import { diagramPlugin } from 'vitepress-plugin-mermaid-diagram';
+
+export default defineConfig({
+  markdown: {
+    config(md) {
+      md.use(diagramPlugin, { preview: true });
+    },
+  },
+});
+```
+
+Then register the component and import dark mode CSS in your theme:
+
+```ts
+// .vitepress/theme/index.ts
+import DefaultTheme from 'vitepress/theme'
+import DiagramPreview from 'vitepress-plugin-mermaid-diagram/DiagramPreview.vue'
+import 'vitepress-plugin-mermaid-diagram/diagram-dark.css'
+
+export default {
+  extends: DefaultTheme,
+  enhanceApp({ app }) {
+    app.component('DiagramPreview', DiagramPreview)
+  },
+}
+```
+
+This gives you:
+- **Preview / Code tabs** — switch between rendered diagram and mermaid source
+- **Fullscreen** — open diagram in a full-screen overlay
+- **Pan & zoom** — scroll to zoom (0.1x–10x), drag to pan
+- **Dark mode** — automatic color switching when VitePress toggles dark mode
 
 ## Usage
 
