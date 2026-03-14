@@ -8,7 +8,7 @@ export interface Participant {
   type: 'participant' | 'actor';
 }
 
-export type SequenceStatement = Message | Note | Activation | Deactivation | Block;
+export type SequenceStatement = Message | Note | Block;
 
 export interface Message {
   kind: 'message';
@@ -27,9 +27,6 @@ export interface Note {
   participants: string[];
   text: string;
 }
-
-export interface Activation  { kind: 'activate'; participant: string; }
-export interface Deactivation { kind: 'deactivate'; participant: string; }
 
 export interface Block {
   kind: 'block';
@@ -113,12 +110,9 @@ function parseStatements(
       continue;
     }
 
-    // activate / deactivate
-    const actMatch = line.match(/^(activate|deactivate)\s+(\S+)$/i);
-    if (actMatch) {
+    // activate / deactivate (standalone statements — skip, only message-level flags are used)
+    if (/^(activate|deactivate)\s+\S+$/i.test(line)) {
       stream.advance();
-      ensure(actMatch[2], ast, known);
-      statements.push({ kind: actMatch[1].toLowerCase() as 'activate' | 'deactivate', participant: actMatch[2] });
       continue;
     }
 

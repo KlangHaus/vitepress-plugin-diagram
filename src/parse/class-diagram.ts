@@ -1,4 +1,5 @@
 import { TokenStream } from './tokenizer.js';
+import type { Direction } from './types.js';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -43,7 +44,7 @@ export interface NamespaceDef {
   classIds: string[];
 }
 
-export type Direction = 'TD' | 'TB' | 'BT' | 'LR' | 'RL';
+export type { Direction } from './types.js';
 
 export interface ClassDiagramAST {
   classes: Map<string, ClassDef>;

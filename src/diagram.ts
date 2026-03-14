@@ -28,19 +28,23 @@ export function render(source: string, options?: RenderOptions): string | null {
   const type = detectDiagramType(source);
   if (!type) return null;
 
-  const theme: Theme = { ...defaultTheme, ...options?.theme };
-  const dark: Theme | undefined = options?.darkTheme === false
-    ? undefined
-    : { ...defaultDarkTheme, ...(typeof options?.darkTheme === 'object' ? options.darkTheme : {}) };
-  let layout: LayoutResult;
+  try {
+    const theme: Theme = { ...defaultTheme, ...options?.theme };
+    const dark: Theme | undefined = options?.darkTheme === false
+      ? undefined
+      : { ...defaultDarkTheme, ...(typeof options?.darkTheme === 'object' ? options.darkTheme : {}) };
+    let layout: LayoutResult;
 
-  switch (type) {
-    case 'flowchart':    layout = layoutFlowchart(parseFlowchart(source), options?.flowchart); break;
-    case 'sequence':     layout = layoutSequence(parseSequence(source), options?.sequence); break;
-    case 'classDiagram': layout = layoutClassDiagram(parseClassDiagram(source), options?.classDiagram); break;
+    switch (type) {
+      case 'flowchart':    layout = layoutFlowchart(parseFlowchart(source), options?.flowchart); break;
+      case 'sequence':     layout = layoutSequence(parseSequence(source), options?.sequence); break;
+      case 'classDiagram': layout = layoutClassDiagram(parseClassDiagram(source), options?.classDiagram); break;
+    }
+
+    return renderSVG(layout, type, theme, dark);
+  } catch {
+    return null;
   }
-
-  return renderSVG(layout, type, theme, dark);
 }
 
 // Re-export everything for advanced usage

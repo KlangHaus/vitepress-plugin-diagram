@@ -428,12 +428,12 @@ function denormalize(
 ): Map<string, Point[]> {
   const edgePoints = new Map<string, Point[]>();
   const chainSet = new Set<string>();
-  for (const c of dummyChains) chainSet.add(`${c.originalSource}-${c.originalTarget}`);
+  for (const c of dummyChains) chainSet.add(edgeKey(c.originalSource, c.originalTarget));
 
   // Direct edges
   for (const edge of originalEdges) {
-    const key = `${edge.source}-${edge.target}`;
-    const origKey = edge.reversed ? `${edge.target}-${edge.source}` : key;
+    const key = edgeKey(edge.source, edge.target);
+    const origKey = edge.reversed ? edgeKey(edge.target, edge.source) : key;
     if (chainSet.has(key)) continue;
 
     const src = nodes.get(edge.source), tgt = nodes.get(edge.target);
@@ -448,8 +448,8 @@ function denormalize(
   // Chained edges
   for (const chain of dummyChains) {
     const key = chain.reversed
-      ? `${chain.originalTarget}-${chain.originalSource}`
-      : `${chain.originalSource}-${chain.originalTarget}`;
+      ? edgeKey(chain.originalTarget, chain.originalSource)
+      : edgeKey(chain.originalSource, chain.originalTarget);
 
     const points: Point[] = [];
     const src = nodes.get(chain.originalSource);
@@ -503,9 +503,8 @@ function computeGroups(
   nodes: Map<string, INode>, inputNodes: InputNode[], parentIds: Set<string>,
 ): Map<string, { x: number; y: number; width: number; height: number }> {
   const groups = new Map<string, { x: number; y: number; width: number; height: number }>();
+  const GROUP_PADDING = 20;
   if (parentIds.size === 0) return groups;
-
-  const padding = 20;
   for (const pid of parentIds) {
     const children = [...nodes.values()].filter((n) => n.parent === pid);
     if (children.length === 0) { groups.set(pid, { x: 0, y: 0, width: 0, height: 0 }); continue; }
@@ -518,13 +517,23 @@ function computeGroups(
       maxY = Math.max(maxY, c.y + c.height / 2);
     }
 
-    groups.set(pid, { x: minX - padding, y: minY - padding, width: maxX - minX + padding * 2, height: maxY - minY + padding * 2 });
+    groups.set(pid, { x: minX - GROUP_PADDING, y: minY - GROUP_PADDING, width: maxX - minX + GROUP_PADDING * 2, height: maxY - minY + GROUP_PADDING * 2 });
   }
 
   return groups;
 }
 
 // ── Utility ─────────────────────────────────────────────────────────────────
+
+const EDGE_SEP = '\0';
+export function edgeKey(source: string, target: string): string {
+  return `${source}${EDGE_SEP}${target}`;
+}
+
+export function parseEdgeKey(key: string): [string, string] {
+  const i = key.indexOf(EDGE_SEP);
+  return [key.slice(0, i), key.slice(i + 1)];
+}
 
 function range(start: number, end: number): number[] {
   const r: number[] = [];

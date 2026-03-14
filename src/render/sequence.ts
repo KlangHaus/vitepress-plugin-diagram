@@ -3,6 +3,10 @@ import type { Message, Note, Block } from '../parse/sequence.js';
 import type { Theme } from './theme.js';
 import { rect, roundRect, line, text, path, defs, arrowDefs } from './svg.js';
 
+const BLOCK_LABEL_CHAR_WIDTH = 8;
+const BLOCK_LABEL_PADDING = 16;
+const BLOCK_LABEL_HEIGHT = 20;
+
 export function renderSequence(layout: LayoutResult, theme: Theme): string {
   const out: string[] = [defs(arrowDefs(theme))];
 
@@ -19,8 +23,8 @@ export function renderSequence(layout: LayoutResult, theme: Theme): string {
     const block = group.data as Block;
     out.push(roundRect(group.x, group.y, group.width, group.height, 4, { fill: 'none', stroke: theme.blockStroke, strokeWidth: 1, cssClass: 'vp-d-block' }));
 
-    const labelW = block.type.length * 8 + 16;
-    out.push(rect(group.x, group.y, labelW, 20, { fill: theme.blockLabelFill, stroke: theme.blockStroke, strokeWidth: 1, cssClass: 'vp-d-block-label-bg' }));
+    const labelW = block.type.length * BLOCK_LABEL_CHAR_WIDTH + BLOCK_LABEL_PADDING;
+    out.push(rect(group.x, group.y, labelW, BLOCK_LABEL_HEIGHT, { fill: theme.blockLabelFill, stroke: theme.blockStroke, strokeWidth: 1, cssClass: 'vp-d-block-label-bg' }));
     out.push(text(group.x + labelW / 2, group.y + 10, block.type, { fill: theme.blockLabelColor, fontSize: 11, fontWeight: 'bold', cssClass: 'vp-d-block-label' }));
 
     if (group.label && group.label !== block.type) {

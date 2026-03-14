@@ -4,6 +4,10 @@ import type { Theme } from './theme.js';
 import { rect, line, text, path, defs, arrowDefs } from './svg.js';
 import { smoothPathD, pointsToPathD } from '../util/math.js';
 
+const FONT_SIZE = 14;
+const LINE_HEIGHT = FONT_SIZE * 1.6;
+const BOX_PADDING = 8;
+
 export function renderClassDiagram(layout: LayoutResult, theme: Theme): string {
   const out: string[] = [defs(arrowDefs(theme))];
 
@@ -43,7 +47,7 @@ export function renderClassDiagram(layout: LayoutResult, theme: Theme): string {
   for (const node of layout.nodes) {
     const cls = node.data as ClassDef;
     const x = node.x - node.width / 2, y = node.y - node.height / 2;
-    const lineH = 14 * 1.6, pad = 8;
+    const lineH = LINE_HEIGHT, pad = BOX_PADDING;
 
     out.push(rect(x, y, node.width, node.height, { fill: theme.classBodyFill, stroke: theme.classStroke, strokeWidth: 1.5, cssClass: 'vp-d-class-body' }));
 

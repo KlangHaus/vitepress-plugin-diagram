@@ -1,8 +1,8 @@
 import type { FlowchartAST, Direction } from '../parse/flowchart.js';
 import type { LayoutResult } from './types.js';
-import type { EngineConfig } from './engine.js';
+import type { EngineConfig, InputNode } from './engine.js';
 import { measureNodeSize } from '../render/measure.js';
-import { layeredLayout } from './engine.js';
+import { layeredLayout, edgeKey, parseEdgeKey } from './engine.js';
 
 export interface FlowchartLayoutConfig {
   nodeSpacing?: number;
@@ -16,7 +16,7 @@ const DIRECTION_MAP: Record<Direction, EngineConfig['rankdir']> = {
 };
 
 export function layoutFlowchart(ast: FlowchartAST, config: FlowchartLayoutConfig = {}): LayoutResult {
-  const inputNodes = [];
+  const inputNodes: InputNode[] = [];
   const inputEdges = [];
   const nodeDataMap = new Map<string, unknown>();
   const edgeDataMap = new Map<string, unknown>();
@@ -33,13 +33,13 @@ export function layoutFlowchart(ast: FlowchartAST, config: FlowchartLayoutConfig
     inputNodes.push({ id: sg.id, width: 0, height: 0 });
     for (const nid of sg.nodeIds) {
       const n = inputNodes.find((n) => n.id === nid);
-      if (n) (n as any).parent = sg.id;
+      if (n) n.parent = sg.id;
     }
   }
 
   for (const edge of ast.edges) {
     inputEdges.push({ source: edge.source, target: edge.target, minlen: edge.minLength });
-    edgeDataMap.set(`${edge.source}-${edge.target}`, edge);
+    edgeDataMap.set(edgeKey(edge.source, edge.target), edge);
   }
 
   const result = layeredLayout(inputNodes, inputEdges, {
@@ -57,7 +57,7 @@ export function layoutFlowchart(ast: FlowchartAST, config: FlowchartLayoutConfig
       .map(([id, pos]) => ({ id, ...pos, data: nodeDataMap.get(id) }))
       .filter((n) => n.data !== undefined),
     edges: [...result.edges.entries()].map(([key, points]) => {
-      const [source, target] = key.split('-');
+      const [source, target] = parseEdgeKey(key);
       return { id: key, source, target, points, data: edgeDataMap.get(key) };
     }),
     groups: [...result.groups.entries()].map(([id, box]) => {

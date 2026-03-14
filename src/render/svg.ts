@@ -1,4 +1,5 @@
 import type { Theme } from './theme.js';
+import { escapeXml } from '../util/text.js';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -7,10 +8,6 @@ function attrs(a: Record<string, string | number | undefined>): string {
     .filter(([, v]) => v !== undefined)
     .map(([k, v]) => `${k}="${String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"`)
     .join(' ');
-}
-
-function escapeXml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // ── Shapes ──────────────────────────────────────────────────────────────────

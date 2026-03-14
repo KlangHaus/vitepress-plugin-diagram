@@ -103,9 +103,6 @@ export function layoutSequence(ast: SequenceAST, config: SequenceLayoutConfig = 
           break;
         }
 
-        case 'activate': case 'deactivate':
-          break;
-
         case 'block': {
           currentY += msgSpacing * 0.5;
           const blockStartY = currentY;

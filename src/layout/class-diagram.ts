@@ -1,8 +1,8 @@
 import type { ClassDiagramAST, ClassDef } from '../parse/class-diagram.js';
 import type { LayoutResult } from './types.js';
-import type { EngineConfig } from './engine.js';
+import type { EngineConfig, InputNode } from './engine.js';
 import { measureText } from '../render/measure.js';
-import { layeredLayout } from './engine.js';
+import { layeredLayout, edgeKey, parseEdgeKey } from './engine.js';
 
 export interface ClassLayoutConfig {
   nodeSpacing?: number;
@@ -10,7 +10,7 @@ export interface ClassLayoutConfig {
 }
 
 export function layoutClassDiagram(ast: ClassDiagramAST, config: ClassLayoutConfig = {}): LayoutResult {
-  const inputNodes = [];
+  const inputNodes: InputNode[] = [];
   const inputEdges = [];
   const nodeDataMap = new Map<string, unknown>();
   const edgeDataMap = new Map<string, unknown>();
@@ -25,13 +25,13 @@ export function layoutClassDiagram(ast: ClassDiagramAST, config: ClassLayoutConf
     inputNodes.push({ id: ns.id, width: 0, height: 0 });
     for (const cid of ns.classIds) {
       const n = inputNodes.find((n) => n.id === cid);
-      if (n) (n as any).parent = ns.id;
+      if (n) n.parent = ns.id;
     }
   }
 
   for (const rel of ast.relationships) {
     inputEdges.push({ source: rel.from, target: rel.to });
-    edgeDataMap.set(`${rel.from}-${rel.to}`, rel);
+    edgeDataMap.set(edgeKey(rel.from, rel.to), rel);
   }
 
   const rankdir: EngineConfig['rankdir'] =
@@ -52,7 +52,7 @@ export function layoutClassDiagram(ast: ClassDiagramAST, config: ClassLayoutConf
       .map(([id, pos]) => ({ id, ...pos, data: nodeDataMap.get(id) }))
       .filter((n) => n.data !== undefined),
     edges: [...result.edges.entries()].map(([key, points]) => {
-      const [source, target] = key.split('-');
+      const [source, target] = parseEdgeKey(key);
       return { id: key, source, target, points, data: edgeDataMap.get(key) };
     }),
     groups: [...result.groups.entries()].map(([id, box]) => {
@@ -62,10 +62,15 @@ export function layoutClassDiagram(ast: ClassDiagramAST, config: ClassLayoutConf
   };
 }
 
+const MEASURE_FONT_SIZE = 14;
+const MEASURE_LINE_HEIGHT = MEASURE_FONT_SIZE * 1.6;
+const MEASURE_PADDING = 16;
+const MIN_CLASS_WIDTH = 100;
+
 function measureClassBox(cls: ClassDef): { width: number; height: number } {
-  const fontSize = 14;
-  const lineH = fontSize * 1.6;
-  const padding = 16;
+  const fontSize = MEASURE_FONT_SIZE;
+  const lineH = MEASURE_LINE_HEIGHT;
+  const padding = MEASURE_PADDING;
 
   let maxWidth = measureText(cls.id, fontSize).width;
   if (cls.annotation) maxWidth = Math.max(maxWidth, measureText(`<<${cls.annotation}>>`, 11).width);
@@ -80,5 +85,5 @@ function measureClassBox(cls: ClassDef): { width: number; height: number } {
   height += 4 + Math.max(methods.length, 1) * lineH;
   height += padding;
 
-  return { width: Math.max(maxWidth + padding * 2, 100), height };
+  return { width: Math.max(maxWidth + padding * 2, MIN_CLASS_WIDTH), height };
 }

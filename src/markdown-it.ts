@@ -1,9 +1,6 @@
 import type MarkdownIt from 'markdown-it';
 import { render, type RenderOptions } from './diagram.js';
-
-function escapeHtml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+import { escapeXml } from './util/text.js';
 
 export function diagramPlugin(md: MarkdownIt, options?: RenderOptions): void {
   const originalFence = md.renderer.rules.fence!;
@@ -20,7 +17,7 @@ export function diagramPlugin(md: MarkdownIt, options?: RenderOptions): void {
         const svg = render(token.content, { ...options, darkTheme: false });
         if (svg) {
           if (options?.preview) {
-            const escaped = escapeHtml(token.content.trim());
+            const escaped = escapeXml(token.content.trim());
             return [
               '<DiagramPreview>',
               `<template #preview>${svg}</template>`,

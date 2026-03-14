@@ -4,6 +4,8 @@ import type { Theme } from './theme.js';
 import { rect, roundRect, circle, diamond, hexagon, stadium, text, path, defs, arrowDefs } from './svg.js';
 import { smoothPathD, pointsToPathD } from '../util/math.js';
 
+const CYLINDER_RY = 8;
+
 export function renderFlowchart(layout: LayoutResult, theme: Theme): string {
   const out: string[] = [defs(arrowDefs(theme))];
 
@@ -78,7 +80,7 @@ export function renderFlowchart(layout: LayoutResult, theme: Theme): string {
 }
 
 function renderCylinder(cx: number, cy: number, w: number, h: number, opts: { fill?: string; stroke?: string; strokeWidth?: number; cssClass?: string }): string {
-  const x = cx - w / 2, y = cy - h / 2, ry = 8;
+  const x = cx - w / 2, y = cy - h / 2, ry = CYLINDER_RY;
   const body = `M ${x} ${y + ry} A ${w / 2} ${ry} 0 0 1 ${x + w} ${y + ry} L ${x + w} ${y + h - ry} A ${w / 2} ${ry} 0 0 1 ${x} ${y + h - ry} Z`;
   const top = `M ${x} ${y + ry} A ${w / 2} ${ry} 0 0 0 ${x + w} ${y + ry}`;
   return [

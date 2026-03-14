@@ -1,8 +1,9 @@
 import { TokenStream } from './tokenizer.js';
+import type { Direction } from './types.js';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
-export type Direction = 'TD' | 'TB' | 'BT' | 'LR' | 'RL';
+export type { Direction } from './types.js';
 
 export type NodeShape =
   | 'rect' | 'round' | 'circle' | 'diamond' | 'hexagon'
