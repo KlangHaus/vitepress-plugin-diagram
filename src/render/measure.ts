@@ -13,7 +13,7 @@ export function measureText(text: string, fontSize = 14): { width: number; heigh
 }
 
 export function measureNodeSize(
-  label: string, fontSize = 14, paddingX = 16, paddingY = 12,
+  label: string, fontSize = 14, paddingX = 20, paddingY = 14,
 ): { width: number; height: number } {
   const lines = label.split('\n');
   const { height: lineHeight } = measureText('X', fontSize);

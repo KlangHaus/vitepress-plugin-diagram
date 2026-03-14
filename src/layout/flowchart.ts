@@ -44,10 +44,10 @@ export function layoutFlowchart(ast: FlowchartAST, config: FlowchartLayoutConfig
 
   const result = layeredLayout(inputNodes, inputEdges, {
     rankdir: DIRECTION_MAP[ast.direction],
-    nodesep: config.nodeSpacing ?? 50,
-    ranksep: config.rankSpacing ?? 50,
-    marginx: config.marginX ?? 20,
-    marginy: config.marginY ?? 20,
+    nodesep: config.nodeSpacing ?? 60,
+    ranksep: config.rankSpacing ?? 60,
+    marginx: config.marginX ?? 24,
+    marginy: config.marginY ?? 24,
   });
 
   return {

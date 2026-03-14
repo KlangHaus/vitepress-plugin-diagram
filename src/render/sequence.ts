@@ -1,14 +1,16 @@
 import type { LayoutResult } from '../layout/types.js';
 import type { Message, Note, Block } from '../parse/sequence.js';
 import type { Theme } from './theme.js';
-import { rect, roundRect, line, text, path, defs, arrowDefs } from './svg.js';
+import { rect, roundRect, line, text, path, defs, arrowDefs, shadowFilter, nodeGradientDefs, gradientFill } from './svg.js';
 
 const BLOCK_LABEL_CHAR_WIDTH = 8;
 const BLOCK_LABEL_PADDING = 16;
 const BLOCK_LABEL_HEIGHT = 20;
+const SHADOW = 'url(#shadow)';
 
 export function renderSequence(layout: LayoutResult, theme: Theme): string {
-  const out: string[] = [defs(arrowDefs(theme))];
+  const gradColors = [theme.participantFill, theme.noteFill, theme.blockLabelFill];
+  const out: string[] = [defs([arrowDefs(theme), shadowFilter(), nodeGradientDefs(gradColors)].join('\n'))];
 
   // lifelines
   for (const node of layout.nodes) {
@@ -21,10 +23,10 @@ export function renderSequence(layout: LayoutResult, theme: Theme): string {
   // block groups
   for (const group of layout.groups) {
     const block = group.data as Block;
-    out.push(roundRect(group.x, group.y, group.width, group.height, 4, { fill: 'none', stroke: theme.blockStroke, strokeWidth: 1, cssClass: 'vp-d-block' }));
+    out.push(roundRect(group.x, group.y, group.width, group.height, 6, { fill: 'none', stroke: theme.blockStroke, strokeWidth: 1, cssClass: 'vp-d-block' }));
 
     const labelW = block.type.length * BLOCK_LABEL_CHAR_WIDTH + BLOCK_LABEL_PADDING;
-    out.push(rect(group.x, group.y, labelW, BLOCK_LABEL_HEIGHT, { fill: theme.blockLabelFill, stroke: theme.blockStroke, strokeWidth: 1, cssClass: 'vp-d-block-label-bg' }));
+    out.push(rect(group.x, group.y, labelW, BLOCK_LABEL_HEIGHT, { fill: gradientFill(theme.blockLabelFill), stroke: theme.blockStroke, strokeWidth: 1, rx: 6, cssClass: 'vp-d-block-label-bg' }));
     out.push(text(group.x + labelW / 2, group.y + 10, block.type, { fill: theme.blockLabelColor, fontSize: 11, fontWeight: 'bold', cssClass: 'vp-d-block-label' }));
 
     if (group.label && group.label !== block.type) {
@@ -51,8 +53,8 @@ export function renderSequence(layout: LayoutResult, theme: Theme): string {
       out.push('</g>');
       out.push(text(cx, y + node.height + 10, data.label as string, { fill: theme.participantTextColor, fontSize: theme.fontSize, cssClass: 'vp-d-participant-text' }));
     } else {
-      out.push(rect(x, y, node.width, node.height, { fill: theme.participantFill, stroke: theme.participantStroke, strokeWidth: 1.5, rx: 3, ry: 3, cssClass: 'vp-d-participant' }));
-      out.push(text(node.x, node.y, data.label as string, { fill: theme.participantTextColor, fontSize: theme.fontSize, fontFamily: theme.fontFamily, cssClass: 'vp-d-participant-text' }));
+      out.push(roundRect(x, y, node.width, node.height, 6, { fill: gradientFill(theme.participantFill), stroke: theme.participantStroke, strokeWidth: 1.5, filter: SHADOW, cssClass: 'vp-d-participant' }));
+      out.push(text(node.x, node.y, data.label as string, { fill: theme.participantTextColor, fontSize: theme.fontSize, fontWeight: '600', fontFamily: theme.fontFamily, cssClass: 'vp-d-participant-text' }));
     }
   }
 
@@ -64,7 +66,7 @@ export function renderSequence(layout: LayoutResult, theme: Theme): string {
     const note = node.data as Note;
     const x = node.x - node.width / 2, y = node.y - node.height / 2, fold = 8;
     const d = `M ${x} ${y} L ${x + node.width - fold} ${y} L ${x + node.width} ${y + fold} L ${x + node.width} ${y + node.height} L ${x} ${y + node.height} Z`;
-    out.push(path(d, { fill: theme.noteFill, stroke: theme.noteStroke, strokeWidth: 1, cssClass: 'vp-d-note' }));
+    out.push(path(d, { fill: gradientFill(theme.noteFill), stroke: theme.noteStroke, strokeWidth: 1, cssClass: 'vp-d-note' }));
     out.push(path(`M ${x + node.width - fold} ${y} L ${x + node.width - fold} ${y + fold} L ${x + node.width} ${y + fold}`, { stroke: theme.noteStroke, strokeWidth: 1, cssClass: 'vp-d-note' }));
     out.push(text(node.x, node.y, note.text, { fill: theme.noteTextColor, fontSize: 12, cssClass: 'vp-d-note-text' }));
   }

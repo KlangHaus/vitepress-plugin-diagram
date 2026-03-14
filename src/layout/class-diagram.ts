@@ -39,8 +39,8 @@ export function layoutClassDiagram(ast: ClassDiagramAST, config: ClassLayoutConf
 
   const result = layeredLayout(inputNodes, inputEdges, {
     rankdir,
-    nodesep: config.nodeSpacing ?? 60,
-    ranksep: config.rankSpacing ?? 80,
+    nodesep: config.nodeSpacing ?? 70,
+    ranksep: config.rankSpacing ?? 90,
     marginx: 20,
     marginy: 20,
   });

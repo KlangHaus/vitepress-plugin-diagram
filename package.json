@@ -1,6 +1,6 @@
 {
   "name": "vitepress-plugin-mermaid-diagram",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "VitePress plugin that renders Mermaid-compatible diagrams to SVG at build time — zero-dependency Sugiyama layout engine, no mermaid.js required",
   "type": "module",
   "main": "./dist/index.js",

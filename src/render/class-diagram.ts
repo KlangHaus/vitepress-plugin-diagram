@@ -1,19 +1,22 @@
 import type { LayoutResult } from '../layout/types.js';
 import type { ClassDef, ClassRelationship, Visibility } from '../parse/class-diagram.js';
 import type { Theme } from './theme.js';
-import { rect, line, text, path, defs, arrowDefs } from './svg.js';
+import { rect, line, text, path, defs, arrowDefs, shadowFilter, nodeGradientDefs, gradientFill } from './svg.js';
 import { smoothPathD, pointsToPathD } from '../util/math.js';
 
 const FONT_SIZE = 14;
 const LINE_HEIGHT = FONT_SIZE * 1.6;
 const BOX_PADDING = 8;
+const NODE_CORNER_RADIUS = 6;
+const SHADOW = 'url(#shadow)';
 
 export function renderClassDiagram(layout: LayoutResult, theme: Theme): string {
-  const out: string[] = [defs(arrowDefs(theme))];
+  const gradColors = [theme.classHeaderFill, theme.classBodyFill, theme.namespaceFill];
+  const out: string[] = [defs([arrowDefs(theme), shadowFilter(), nodeGradientDefs(gradColors)].join('\n'))];
 
   // namespace groups
   for (const g of layout.groups) {
-    out.push(rect(g.x, g.y, g.width, g.height, { fill: theme.namespaceFill, stroke: theme.namespaceStroke, strokeDasharray: '8,4', rx: 4, ry: 4, cssClass: 'vp-d-namespace' }));
+    out.push(rect(g.x, g.y, g.width, g.height, { fill: theme.namespaceFill, stroke: theme.namespaceStroke, strokeDasharray: '8,4', rx: 8, ry: 8, cssClass: 'vp-d-namespace' }));
     if (g.label) out.push(text(g.x + 8, g.y + 14, g.label, { fill: theme.namespaceLabelColor, fontSize: 12, fontWeight: 'bold', textAnchor: 'start', dominantBaseline: 'auto', cssClass: 'vp-d-namespace-label' }));
   }
 
@@ -49,7 +52,8 @@ export function renderClassDiagram(layout: LayoutResult, theme: Theme): string {
     const x = node.x - node.width / 2, y = node.y - node.height / 2;
     const lineH = LINE_HEIGHT, pad = BOX_PADDING;
 
-    out.push(rect(x, y, node.width, node.height, { fill: theme.classBodyFill, stroke: theme.classStroke, strokeWidth: 1.5, cssClass: 'vp-d-class-body' }));
+    // body background with shadow
+    out.push(rect(x, y, node.width, node.height, { fill: gradientFill(theme.classBodyFill), stroke: theme.classStroke, strokeWidth: 1.5, rx: NODE_CORNER_RADIUS, ry: NODE_CORNER_RADIUS, filter: SHADOW, cssClass: 'vp-d-class-body' }));
 
     let cy = y + pad;
 
@@ -61,7 +65,7 @@ export function renderClassDiagram(layout: LayoutResult, theme: Theme): string {
 
     // header background
     const headerH = cy - y + lineH;
-    out.push(rect(x, y, node.width, headerH, { fill: theme.classHeaderFill, stroke: theme.classStroke, strokeWidth: 1.5, cssClass: 'vp-d-class-header' }));
+    out.push(rect(x, y, node.width, headerH, { fill: gradientFill(theme.classHeaderFill), stroke: theme.classStroke, strokeWidth: 1.5, rx: NODE_CORNER_RADIUS, ry: NODE_CORNER_RADIUS, cssClass: 'vp-d-class-header' }));
 
     // re-render annotation on top
     if (cls.annotation) out.push(text(node.x, y + pad + 6, `\u00AB${cls.annotation}\u00BB`, { fill: theme.classHeaderTextColor, fontSize: 11, cssClass: 'vp-d-class-header-text' }));

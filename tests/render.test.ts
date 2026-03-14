@@ -48,7 +48,8 @@ describe('render()', () => {
 
   it('accepts theme options', () => {
     const svg = render('graph TD\n  A --> B', { theme: { processFill: '#ff0000' } });
-    expect(svg).toContain('#ff0000');
+    // Theme color is used in gradient def and referenced by shapes
+    expect(svg).toContain('grad-ff0000');
   });
 });
 

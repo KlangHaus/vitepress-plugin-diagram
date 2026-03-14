@@ -1,5 +1,6 @@
 import type { Theme } from './theme.js';
 import { escapeXml } from '../util/text.js';
+import { lighten, darken } from '../util/color.js';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -20,10 +21,11 @@ export interface ShapeOpts {
   cssClass?: string;
   rx?: number;
   ry?: number;
+  filter?: string;
 }
 
 export function rect(x: number, y: number, w: number, h: number, opts: ShapeOpts = {}): string {
-  return `<rect ${attrs({ x, y, width: w, height: h, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, rx: opts.rx, ry: opts.ry, class: opts.cssClass })}/>`;
+  return `<rect ${attrs({ x, y, width: w, height: h, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, rx: opts.rx, ry: opts.ry, filter: opts.filter, class: opts.cssClass })}/>`;
 }
 
 export function roundRect(x: number, y: number, w: number, h: number, r: number, opts: ShapeOpts = {}): string {
@@ -31,12 +33,12 @@ export function roundRect(x: number, y: number, w: number, h: number, r: number,
 }
 
 export function circle(cx: number, cy: number, r: number, opts: ShapeOpts = {}): string {
-  return `<circle ${attrs({ cx, cy, r, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, class: opts.cssClass })}/>`;
+  return `<circle ${attrs({ cx, cy, r, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, filter: opts.filter, class: opts.cssClass })}/>`;
 }
 
 export function polygon(points: [number, number][], opts: ShapeOpts = {}): string {
   const pts = points.map(([x, y]) => `${x},${y}`).join(' ');
-  return `<polygon ${attrs({ points: pts, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, class: opts.cssClass })}/>`;
+  return `<polygon ${attrs({ points: pts, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, filter: opts.filter, class: opts.cssClass })}/>`;
 }
 
 export function diamond(cx: number, cy: number, w: number, h: number, opts: ShapeOpts = {}): string {
@@ -98,11 +100,11 @@ export interface LineOpts {
 }
 
 export function line(x1: number, y1: number, x2: number, y2: number, opts: LineOpts = {}): string {
-  return `<line ${attrs({ x1, y1, x2, y2, stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, 'marker-end': opts.markerEnd, 'marker-start': opts.markerStart, class: opts.cssClass })}/>`;
+  return `<line ${attrs({ x1, y1, x2, y2, stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, 'stroke-linecap': 'round', 'marker-end': opts.markerEnd, 'marker-start': opts.markerStart, class: opts.cssClass })}/>`;
 }
 
 export function path(d: string, opts: LineOpts & { fill?: string } = {}): string {
-  return `<path ${attrs({ d, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, 'marker-end': opts.markerEnd, 'marker-start': opts.markerStart, class: opts.cssClass })}/>`;
+  return `<path ${attrs({ d, fill: opts.fill ?? 'none', stroke: opts.stroke ?? '#333', 'stroke-width': opts.strokeWidth ?? 1, 'stroke-dasharray': opts.strokeDasharray, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'marker-end': opts.markerEnd, 'marker-start': opts.markerStart, class: opts.cssClass })}/>`;
 }
 
 // ── Structural ──────────────────────────────────────────────────────────────
@@ -122,6 +124,29 @@ export function wrap(content: string, width: number, height: number, padding = 2
     '</svg>',
   );
   return parts.join('\n');
+}
+
+// ── Shadow filter ───────────────────────────────────────────────────────────
+
+export function shadowFilter(): string {
+  return `<filter id="shadow" x="-6%" y="-6%" width="116%" height="128%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.10)"/></filter>`;
+}
+
+// ── Gradient helpers ────────────────────────────────────────────────────────
+
+export function gradientDef(id: string, topColor: string, bottomColor: string): string {
+  return `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${topColor}"/><stop offset="100%" stop-color="${bottomColor}"/></linearGradient>`;
+}
+
+/** Generate gradient defs for a set of hex fill colors. IDs are `grad-{hex without #}`. */
+export function nodeGradientDefs(colors: string[]): string {
+  const unique = [...new Set(colors)];
+  return unique.map((c) => gradientDef(`grad-${c.slice(1)}`, lighten(c, 14), darken(c, 10))).join('\n');
+}
+
+/** Returns `url(#grad-{hex without #})` for use as a fill attribute. */
+export function gradientFill(color: string): string {
+  return `url(#grad-${color.slice(1)})`;
 }
 
 // ── Arrow markers ───────────────────────────────────────────────────────────

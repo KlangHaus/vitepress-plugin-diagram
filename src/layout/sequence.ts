@@ -19,11 +19,11 @@ interface Column {
 }
 
 export function layoutSequence(ast: SequenceAST, config: SequenceLayoutConfig = {}): LayoutResult {
-  const spacing = config.participantSpacing ?? 150;
-  const msgSpacing = config.messageSpacing ?? 40;
-  const headerH = config.headerHeight ?? 50;
-  const padding = config.padding ?? 20;
-  const boxH = 36;
+  const spacing = config.participantSpacing ?? 160;
+  const msgSpacing = config.messageSpacing ?? 44;
+  const headerH = config.headerHeight ?? 54;
+  const padding = config.padding ?? 24;
+  const boxH = 38;
 
   const columns: Column[] = ast.participants.map((p, i) => {
     const label = p.alias ?? p.id;
