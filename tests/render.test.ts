@@ -82,10 +82,10 @@ describe('dark mode', () => {
 
   it('exports darkTheme constant', () => {
     expect(darkTheme).toBeDefined();
-    expect(darkTheme.processFill).toBe('#1e3a5f');
-    expect(darkTheme.decisionFill).toBe('#4a3728');
-    expect(darkTheme.terminalFill).toBe('#1a3a2a');
-    expect(darkTheme.dataFill).toBe('#2d1f3d');
+    expect(darkTheme.processFill).toBe('#1a3038');
+    expect(darkTheme.decisionFill).toBe('#3a2820');
+    expect(darkTheme.terminalFill).toBe('#1e3028');
+    expect(darkTheme.dataFill).toBe('#282036');
   });
 });
 
